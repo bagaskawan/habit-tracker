@@ -1,17 +1,17 @@
-export type HabitFrequency = "daily" | "weekly" | "monthly";
+export type HabitFrequency = "daily";
 
 export interface Habit {
   id: string;
   name: string;
   frequency: HabitFrequency;
-  createdAt: string; // ISO
+  created_at: string; // ISO
   archived?: boolean;
 }
 
 export interface Completion {
-  habitId: string;
-  date: string; // YYYY-MM-DD for daily; YYYY-Www for weekly; YYYY-MM for monthly
-  completedAt: string; // ISO
+  habit_id: string;
+  period_key: string; // YYYY-MM-DD for daily
+  completed_at: string; // ISO
 }
 
 export interface ReminderSettings {

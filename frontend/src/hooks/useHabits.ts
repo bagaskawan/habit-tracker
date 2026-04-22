@@ -8,47 +8,80 @@ export function useHabits() {
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  const refresh = useCallback(() => {
-    setHabits(habitStore.list());
-    setCompletions(completionStore.list());
+  const refresh = useCallback(async () => {
+    const fetchedHabits = await habitStore.list();
+    const fetchedCompletions = await completionStore.list();
+    setHabits(fetchedHabits);
+    setCompletions(fetchedCompletions);
   }, []);
 
   useEffect(() => {
-    refresh();
-    setHydrated(true);
+    refresh().then(() => setHydrated(true));
+
     const unsub = subscribe(refresh);
     return unsub;
   }, [refresh]);
 
-  const addHabit = useCallback((name: string, frequency: HabitFrequency) => {
-    const next: Habit = {
-      id: uid(),
-      name: name.trim(),
-      frequency,
-      createdAt: new Date().toISOString(),
-    };
-    const all = [...habitStore.list(), next];
-    habitStore.save(all);
-  }, []);
+  const addHabit = useCallback(
+    async (name: string, frequency: HabitFrequency) => {
+      const next: Habit = {
+        id: uid(),
+        name: name.trim(),
+        frequency,
+        created_at: new Date().toISOString(),
+      };
 
-  const updateHabit = useCallback((id: string, patch: Partial<Habit>) => {
-    const all = habitStore
-      .list()
-      .map((h) => (h.id === id ? { ...h, ...patch } : h));
-    habitStore.save(all);
-  }, []);
+      setHabits((prev) => [...prev, next]);
 
-  const removeHabit = useCallback((id: string) => {
-    habitStore.save(habitStore.list().filter((h) => h.id !== id));
-    completionStore.save(
-      completionStore.list().filter((c) => c.habitId !== id),
+      await habitStore.add(next);
+    },
+    [],
+  );
+
+  const updateHabit = useCallback(async (id: string, patch: Partial<Habit>) => {
+    setHabits((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, ...patch } : h)),
     );
+
+    await habitStore.update(id, patch);
   }, []);
 
-  const toggle = useCallback((habit: Habit, date: Date) => {
-    const next = toggleCompletion(completionStore.list(), habit, date);
-    completionStore.save(next);
+  const removeHabit = useCallback(async (id: string) => {
+    setHabits((prev) => prev.filter((h) => h.id !== id));
+    setCompletions((prev) => prev.filter((c) => c.habit_id !== id));
+
+    await habitStore.delete(id);
   }, []);
+
+  const toggle = useCallback(
+    async (habit: Habit, date: Date) => {
+      const nextCompletions = toggleCompletion(completions, habit, date);
+
+      const isNowCompleted = nextCompletions.length > completions.length;
+
+      setCompletions(nextCompletions);
+
+      if (isNowCompleted) {
+        const added = nextCompletions.find(
+          (nc) =>
+            !completions.some(
+              (c) => c.habit_id === nc.habit_id && c.period_key === nc.period_key,
+            ),
+        );
+        if (added) await completionStore.add(added);
+      } else {
+        const removed = completions.find(
+          (c) =>
+            !nextCompletions.some(
+              (nc) => nc.habit_id === c.habit_id && nc.period_key === c.period_key,
+            ),
+        );
+        if (removed)
+          await completionStore.remove(removed.habit_id, removed.period_key);
+      }
+    },
+    [completions],
+  );
 
   return {
     habits,

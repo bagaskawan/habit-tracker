@@ -1,7 +1,5 @@
 import {
   format,
-  getISOWeek,
-  getISOWeekYear,
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
@@ -11,19 +9,14 @@ import {
 import type { Completion, Habit } from "./types";
 
 export const dailyKey = (d: Date) => format(d, "yyyy-MM-dd");
-export const weeklyKey = (d: Date) =>
-  `${getISOWeekYear(d)}-W${String(getISOWeek(d)).padStart(2, "0")}`;
-export const monthlyKey = (d: Date) => format(d, "yyyy-MM");
 
 export function keyForFrequency(habit: Habit, d: Date) {
-  if (habit.frequency === "daily") return dailyKey(d);
-  if (habit.frequency === "weekly") return weeklyKey(d);
-  return monthlyKey(d);
+  return dailyKey(d);
 }
 
 export function isCompleted(completions: Completion[], habit: Habit, d: Date) {
   const key = keyForFrequency(habit, d);
-  return completions.some((c) => c.habitId === habit.id && c.date === key);
+  return completions.some((c) => c.habit_id === habit.id && c.period_key === key);
 }
 
 export function toggleCompletion(
@@ -33,16 +26,16 @@ export function toggleCompletion(
 ): Completion[] {
   const key = keyForFrequency(habit, d);
   const exists = completions.some(
-    (c) => c.habitId === habit.id && c.date === key,
+    (c) => c.habit_id === habit.id && c.period_key === key,
   );
   if (exists) {
     return completions.filter(
-      (c) => !(c.habitId === habit.id && c.date === key),
+      (c) => !(c.habit_id === habit.id && c.period_key === key),
     );
   }
   return [
     ...completions,
-    { habitId: habit.id, date: key, completedAt: new Date().toISOString() },
+    { habit_id: habit.id, period_key: key, completed_at: new Date().toISOString() },
   ];
 }
 
@@ -96,10 +89,6 @@ export function streakFor(
   habit: Habit,
   today = new Date(),
 ): number {
-  if (habit.frequency !== "daily") {
-    // simple count for non-daily
-    return completions.filter((c) => c.habitId === habit.id).length;
-  }
   let streak = 0;
   let cursor = today;
   while (isCompleted(completions, habit, cursor)) {
@@ -114,14 +103,11 @@ export function habitCompletionPctForMonth(
   habit: Habit,
   reference: Date,
 ): number {
-  if (habit.frequency !== "daily") return 0;
   const days = monthDays(reference);
   const done = days.filter((d) => isCompleted(completions, habit, d)).length;
   return (done / days.length) * 100;
 }
 
-export function uid() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
-}
+export const uid = () => crypto.randomUUID();
 
 export { parseISO };
