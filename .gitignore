@@ -1,0 +1,8 @@
+frontend/.env
+backend/.env
+backend/.flaskenv
+
+frontend/dist
+backend/env
+backend/.venv
+.env
