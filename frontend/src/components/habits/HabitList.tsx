@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { Flame, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,11 +16,23 @@ import {
   streakFor,
 } from "@/lib/habits/utils";
 import type { Completion, Habit } from "@/lib/habits/types";
+import { AddHabit } from "./AddHabit";
+import type { HabitFrequency } from "@/lib/habits/types";
+import { useHabits } from "@/hooks/useHabits";
 
-function EmptyState({ message }: { message: string }) {
+function EmptyState({
+  message,
+  onAddHabit,
+}: {
+  message: string;
+  onAddHabit: (name: string, freq: HabitFrequency) => void;
+}) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-      <p className="font-serif text-2xl text-muted-foreground">{message}</p>
+    <div className="rounded-lg border border-dashed border-border bg-card/50 px-6 py-16 text-center mt-6">
+      <p className="font-serif text-2xl text-muted-foreground mb-4">
+        {message}
+      </p>
+      <AddHabit onAddHabit={onAddHabit} />
     </div>
   );
 }
@@ -32,6 +44,7 @@ export function HabitList({
   reference,
   onToggle,
   onRemove,
+  onAddHabit,
 }: {
   habits: Habit[];
   completions: Completion[];
@@ -39,12 +52,16 @@ export function HabitList({
   reference: Date;
   onToggle: (h: Habit, d: Date) => void;
   onRemove: (id: string) => void;
+  onAddHabit: (name: string, freq: HabitFrequency) => void;
 }) {
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
 
   if (habits.length === 0) {
     return (
-      <EmptyState message="No daily habits yet. Click 'New habit' to start." />
+      <EmptyState
+        message="No daily habits yet. Click 'New habit' to start."
+        onAddHabit={onAddHabit}
+      />
     );
   }
 
@@ -56,20 +73,31 @@ export function HabitList({
             <th className="sticky left-0 z-10 bg-card px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Habit
             </th>
-            {days.map((d) => (
-              <th
-                key={d.toISOString()}
-                className="w-8 py-3 text-center text-[16px] font-normal text-muted-foreground"
-              >
-                {d.getDate()}
-              </th>
-            ))}
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            {days.map((d) => {
+              const isToday = isSameDay(d, new Date());
+              return (
+                <th
+                  key={d.toISOString()}
+                  className={`w-8 py-3 text-center text-[16px] font-normal text-muted-foreground ${
+                    isToday ? "bg-red-50 dark:bg-red-950/30" : ""
+                  }`}
+                >
+                  <span
+                    className={
+                      isToday
+                        ? "flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white mx-auto font-bold"
+                        : ""
+                    }
+                  >
+                    {d.getDate()}
+                  </span>
+                </th>
+              );
+            })}
+            <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
               %
             </th>
-            <th className="px-2 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Streak
-            </th>
+            <th className="px-2 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground"></th>
             <th className="w-10" />
           </tr>
         </thead>
@@ -86,11 +114,14 @@ export function HabitList({
                   {h.name}
                 </td>
                 {days.map((d) => {
+                  const isToday = isSameDay(d, new Date());
                   const done = isCompleted(completions, h, d);
                   return (
                     <td
                       key={d.toISOString()}
-                      className="px-0.5 py-2 text-center"
+                      className={`px-0.5 py-2 text-center ${
+                        isToday ? "bg-red-50 dark:bg-red-950/30" : ""
+                      }`}
                     >
                       <button
                         onClick={() => onToggle(h, d)}
@@ -104,16 +135,16 @@ export function HabitList({
                     </td>
                   );
                 })}
-                <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">
+                <td className="px-4 py-3 text-center tabular-nums text-muted-foreground">
                   {pct.toFixed(0)}%
                 </td>
-                <td className="px-2 py-3 text-right">
+                <td className="px-2 py-3 text-center">
                   <span className="inline-flex items-center gap-1 tabular-nums">
                     <Flame className="h-3 w-3" />
                     {streak}
                   </span>
                 </td>
-                <td className="px-2 py-3 text-right">
+                <td className="px-2 py-3 text-center">
                   <Button
                     variant="ghost"
                     size="icon"

@@ -72,7 +72,7 @@ export function HabitStats({
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
           Daily trend
         </p>
-        <div className="mt-2 h-[120px]">
+        <div className="mt-2 h-[120px] w-full">
           <TrendChart data={trendData} />
         </div>
       </div>

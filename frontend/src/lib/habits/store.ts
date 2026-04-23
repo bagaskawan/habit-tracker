@@ -35,7 +35,12 @@ export const habitStore = {
   },
 
   async add(habit: Habit) {
-    const { error } = await supabase.from("habits").insert([habit]);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { error } = await supabase.from("habits").insert([
+      { ...habit, user_id: user.id }
+    ]);
     if (error) throw error;
     return;
   },
@@ -70,11 +75,13 @@ export const completionStore = {
   },
 
   async add(completion: Completion) {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from("habit_completions").insert([
       {
         habit_id: completion.habit_id,
         period_key: completion.period_key,
         completed_at: completion.completed_at || new Date().toISOString(),
+        user_id: user?.id,
       },
     ]);
     if (error) console.error("Error checking habit:", error);

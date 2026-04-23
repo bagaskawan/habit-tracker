@@ -91,10 +91,18 @@ export function streakFor(
 ): number {
   let streak = 0;
   let cursor = today;
+
+  // If not completed today, check if it was completed yesterday.
+  // The streak is still "active" if they haven't completed it today yet.
+  if (!isCompleted(completions, habit, cursor)) {
+    cursor = subDays(cursor, 1);
+  }
+
   while (isCompleted(completions, habit, cursor)) {
     streak += 1;
     cursor = subDays(cursor, 1);
   }
+  
   return streak;
 }
 

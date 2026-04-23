@@ -18,12 +18,14 @@ export function ReminderControl({
   minute,
   onToggle,
   onTime,
+  children,
 }: {
   enabled: boolean;
   hour: number;
   minute: number;
   onToggle: (v: boolean) => void;
   onTime: (h: number, m: number) => void;
+  children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -31,13 +33,21 @@ export function ReminderControl({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
-        render={<Button variant="ghost" size="icon" aria-label="Reminder" />}
+        nativeButton={!children}
+        render={
+          children ? (
+            (children as React.ReactElement)
+          ) : (
+            <Button variant="ghost" size="icon" aria-label="Reminder" />
+          )
+        }
       >
-        {enabled ? (
-          <Bell className="h-4 w-4" />
-        ) : (
-          <BellOff className="h-4 w-4" />
-        )}
+        {!children &&
+          (enabled ? (
+            <Bell className="h-4 w-4" />
+          ) : (
+            <BellOff className="h-4 w-4" />
+          ))}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -33,7 +33,7 @@ export function HabitTracker() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HabitHeader onAddHabit={addHabit} />
+      <HabitHeader onAddHabit={addHabit} hasHabits={habits.length > 0} />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
         <HabitStats
@@ -51,6 +51,7 @@ export function HabitTracker() {
           reference={reference}
           onToggle={toggle}
           onRemove={removeHabit}
+          onAddHabit={addHabit}
         />
       </main>
     </div>
