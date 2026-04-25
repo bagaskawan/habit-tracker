@@ -6,7 +6,7 @@ import { HabitStats } from "./HabitStats";
 import { HabitList } from "./HabitList";
 
 export function HabitTracker() {
-  const { habits, completions, addHabit, removeHabit, toggle, hydrated } =
+  const { habits, completions, addHabit, removeHabit, toggle, hydrated, updateHabit } =
     useHabits();
   const [reference, setReference] = useState(new Date());
 
@@ -52,6 +52,7 @@ export function HabitTracker() {
           onToggle={toggle}
           onRemove={removeHabit}
           onAddHabit={addHabit}
+          onUpdateHabit={updateHabit}
         />
       </main>
     </div>

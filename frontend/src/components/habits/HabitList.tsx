@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   habitCompletionPctForMonth,
   isCompleted,
@@ -45,6 +46,7 @@ export function HabitList({
   onToggle,
   onRemove,
   onAddHabit,
+  onUpdateHabit,
 }: {
   habits: Habit[];
   completions: Completion[];
@@ -53,8 +55,11 @@ export function HabitList({
   onToggle: (h: Habit, d: Date) => void;
   onRemove: (id: string) => void;
   onAddHabit: (name: string, freq: HabitFrequency) => void;
+  onUpdateHabit?: (id: string, patch: Partial<Habit>) => void;
 }) {
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [editName, setEditName] = useState("");
 
   if (habits.length === 0) {
     return (
@@ -111,7 +116,15 @@ export function HabitList({
                 className="border-b border-border last:border-b-0 hover:bg-muted/40"
               >
                 <td className="sticky left-0 z-10 bg-card px-4 py-3 font-medium">
-                  {h.name}
+                  <button
+                    onClick={() => {
+                      setEditingHabit(h);
+                      setEditName(h.name);
+                    }}
+                    className="cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                  >
+                    {h.name}
+                  </button>
                 </td>
                 {days.map((d) => {
                   const isToday = isSameDay(d, new Date());
@@ -189,6 +202,53 @@ export function HabitList({
               }}
             >
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={!!editingHabit}
+        onOpenChange={(open) => {
+          if (!open) setEditingHabit(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Habit</DialogTitle>
+            <DialogDescription>
+              Change the name of your habit.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              placeholder="Habit name"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && editName.trim() && editingHabit) {
+                  onUpdateHabit?.(editingHabit.id, { name: editName.trim() });
+                  setEditingHabit(null);
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setEditingHabit(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (editName.trim() && editingHabit) {
+                  onUpdateHabit?.(editingHabit.id, { name: editName.trim() });
+                  setEditingHabit(null);
+                }
+              }}
+              disabled={
+                !editName.trim() || editName.trim() === editingHabit?.name
+              }
+            >
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>

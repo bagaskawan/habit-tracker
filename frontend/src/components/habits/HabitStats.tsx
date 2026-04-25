@@ -43,9 +43,7 @@ export function HabitStats({
             </Button>
           </div>
         </div>
-        <p className="mt-4 font-serif text-3xl">
-          {format(reference, "MMMM yyyy")}
-        </p>
+        <p className="mt-4 text-3xl">{format(reference, "MMMM yyyy")}</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {dailyHabitsCount} daily
         </p>
@@ -58,7 +56,7 @@ export function HabitStats({
         <div className="mt-2 flex items-center gap-6">
           <CompletionDonut value={completionRate} />
           <div>
-            <p className="font-serif text-4xl leading-none">
+            <p className="text-4xl leading-none">
               {completionRate.toFixed(1)}%
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
