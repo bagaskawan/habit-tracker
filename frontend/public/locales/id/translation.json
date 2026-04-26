@@ -1,0 +1,61 @@
+{
+  "addHabit": {
+    "cancel": "Batal",
+    "create": "Buat",
+    "name_label": "Nama",
+    "placeholder": "cth. Baca 20 halaman",
+    "title": "Kebiasaan baru",
+    "trigger": "Kebiasaan Baru"
+  },
+  "habitHeader": {
+    "app_title": "Atomic Habits",
+    "logout": "Keluar",
+    "please_wait": "Mohon tunggu",
+    "set_reminder": "Atur Pengingat",
+    "user_settings": "Pengaturan Pengguna"
+  },
+  "habitList": {
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "delete_confirm": "Apakah kamu yakin ingin menghapus",
+    "delete_confirm_suffix": "? Tindakan ini tidak dapat dibatalkan.",
+    "delete_title": "Hapus Kebiasaan",
+    "edit_description": "Ubah nama kebiasaan kamu.",
+    "edit_title": "Edit Kebiasaan",
+    "empty_message": "Belum ada kebiasaan harian. Klik 'Kebiasaan Baru' untuk mulai.",
+    "habit_column": "Kebiasaan",
+    "placeholder": "Nama kebiasaan",
+    "save_changes": "Simpan Perubahan"
+  },
+  "habitStats": {
+    "all_daily_this_month": "Semua kebiasaan harian bulan ini",
+    "daily": "harian",
+    "daily_trend": "Tren harian",
+    "month": "Bulan",
+    "total_completion": "Total penyelesaian"
+  },
+  "loading": {
+    "loading_settings": "Memuat pengaturan...",
+    "please_wait": "Mohon tunggu"
+  },
+  "login": {
+    "subtitle": "Jangan hanya lacak tugas. Bangun kebiasaan yang membentuk IDENTITAS BARU kamu",
+    "title": "Hai Achievers!!!"
+  },
+  "reminder": {
+    "enable_notification": "Aktifkan notifikasi browser",
+    "fires_note": "Pengingat aktif selama tab ini terbuka.",
+    "time": "Waktu",
+    "title": "Pengingat harian"
+  },
+  "settings": {
+    "back": "Kembali",
+    "font_hand": "Tulisan Tangan",
+    "font_sans": "Sans Serif",
+    "font_serif": "Serif",
+    "lang_en": "Inggris",
+    "lang_id": "Indonesia",
+    "set_font": "Pilih Font",
+    "set_language": "Pilih Bahasa"
+  }
+}

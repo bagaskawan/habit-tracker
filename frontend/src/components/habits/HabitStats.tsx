@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrendChart } from "./TrendChart";
 import { CompletionDonut } from "./CompletionDonut";
+import { useTranslation } from "react-i18next";
 
 export function HabitStats({
   reference,
@@ -17,12 +18,14 @@ export function HabitStats({
   completionRate: number;
   trendData: { day: number; value: number }[];
 }) {
+  const { t } = useTranslation();
+
   return (
     <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Month
+            {t("habitStats.month")}
           </p>
           <div className="flex items-center gap-1">
             <Button
@@ -45,13 +48,13 @@ export function HabitStats({
         </div>
         <p className="mt-4 text-3xl">{format(reference, "MMMM yyyy")}</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          {dailyHabitsCount} daily
+          {dailyHabitsCount} {t("habitStats.daily")}
         </p>
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
-          Total completion
+          {t("habitStats.total_completion")}
         </p>
         <div className="mt-2 flex items-center gap-6">
           <CompletionDonut value={completionRate} />
@@ -60,7 +63,7 @@ export function HabitStats({
               {completionRate.toFixed(1)}%
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              All daily habits this month
+              {t("habitStats.all_daily_this_month")}
             </p>
           </div>
         </div>
@@ -68,7 +71,7 @@ export function HabitStats({
 
       <div className="rounded-lg border border-border bg-card p-6">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">
-          Daily trend
+          {t("habitStats.daily_trend")}
         </p>
         <div className="mt-2 h-[120px] w-full">
           <TrendChart data={trendData} />

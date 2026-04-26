@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,133 +15,40 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase/supabaseClient";
+import { useTranslation } from "react-i18next";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 export function UserSettings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { preferences, isFetching, updatePreference } = useUserPreferences();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isFetchingPrefs, setIsFetchingPrefs] = useState(true);
-  const [language, setLanguage] = useState("");
-  const [font, setFont] = useState("");
-
-  useEffect(() => {
-    async function fetchPreferences() {
-      if (!user) return;
-      try {
-        // Gunakan maybeSingle() agar tidak error jika data belum ada
-        const { data, error } = await supabase
-          .from("user_preferences")
-          .select("language, font")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data) {
-          // Jika data sudah ada, gunakan data tersebut
-          setLanguage(data.language);
-          setFont(data.font);
-
-          document.documentElement.classList.remove(
-            "font-sans",
-            "font-serif",
-            "font-hand",
-          );
-          document.documentElement.classList.add(`font-${data.font}`);
-        } else {
-          // Jika data belum ada, buat data baru (Insert) dengan nilai default
-          const defaultLanguage = user.user_metadata?.language || "en";
-          const defaultFont = user.user_metadata?.font || "hand";
-
-          const { error: insertError } = await supabase
-            .from("user_preferences")
-            .insert({
-              user_id: user.id,
-              language: defaultLanguage,
-              font: defaultFont,
-              updated_at: new Date().toISOString(),
-            });
-
-          if (insertError) {
-            console.error("Gagal membuat preferensi default:", insertError);
-          } else {
-            setLanguage(defaultLanguage);
-            setFont(defaultFont);
-
-            document.documentElement.classList.remove(
-              "font-sans",
-              "font-serif",
-              "font-hand",
-            );
-            document.documentElement.classList.add(`font-${defaultFont}`);
-          }
-        }
-      } catch (error) {
-        console.error("Gagal mengambil preferensi:", error);
-      } finally {
-        setIsFetchingPrefs(false);
-      }
-    }
-
-    if (user) {
-      fetchPreferences();
-    } else if (!loading) {
-      setIsFetchingPrefs(false);
-    }
-  }, [user, loading]);
 
   const handlePreferenceChange = async (
     type: "language" | "font",
     value: string,
   ) => {
-    if (!user) return;
     setIsUpdating(true);
-
-    try {
-      // Upsert data ke Supabase table user_preferences
-      const { error } = await supabase.from("user_preferences").upsert({
-        user_id: user.id,
-        [type]: value,
-        updated_at: new Date().toISOString(),
-      });
-
-      if (error) throw error;
-
-      if (type === "language") {
-        setLanguage(value);
-        // TODO: Terapkan logika ganti bahasa (i18n) di sini
-      } else if (type === "font") {
-        setFont(value);
-        // Manipulasi root HTML class untuk ubah font global secara instan
-        document.documentElement.classList.remove(
-          "font-sans",
-          "font-serif",
-          "font-hand",
-        );
-        document.documentElement.classList.add(`font-${value}`);
-      }
-    } catch (error) {
-      console.error("Gagal menyimpan preferensi:", error);
-    } finally {
-      setIsUpdating(false);
-    }
+    await updatePreference(type, value);
+    setIsUpdating(false);
   };
 
-  if (loading || isFetchingPrefs) {
-    return <LoadingScreen message="Loading settings..." />;
+  if (loading || isFetching) {
+    return <LoadingScreen message={t("loading.loading_settings")} />;
   }
 
   return (
     <>
       <div className="relative flex min-h-screen w-full justify-center px-4 py-16 md:px-6 lg:px-8">
+        {/* Overlay transisi "vibe coding" */}
         {isUpdating && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-[2px] transition-all duration-300">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/20 backdrop-blur-md transition-all duration-300">
             <div className="h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-black"></div>
           </div>
         )}
         <div
-          className={`w-full max-w-lg space-y-4 transition-opacity duration-300 ${isUpdating ? "opacity-50 pointer-events-none" : "opacity-100"}`}
+          className={`w-full max-w-lg space-y-4 transition-all duration-300 ${isUpdating ? "scale-[0.98] opacity-60 pointer-events-none" : "scale-100 opacity-100"}`}
         >
           <Button
             variant="ghost"
@@ -149,7 +56,7 @@ export function UserSettings() {
             className="w-fit pl-0 hover:bg-transparent"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            {t("settings.back")}
           </Button>
           <Card className="w-full shadow-md">
             <CardHeader className="flex flex-col items-center gap-3 pb-8 pt-10">
@@ -174,10 +81,10 @@ export function UserSettings() {
             <CardContent className="space-y-6 px-8 pb-10">
               <div className="space-y-3">
                 <Label className="text-sm font-semibold text-foreground">
-                  Set Language
+                  {t("settings.set_language")}
                 </Label>
                 <RadioGroup
-                  value={language}
+                  value={preferences?.language || "en"}
                   onValueChange={(val) =>
                     handlePreferenceChange("language", val)
                   }
@@ -189,7 +96,7 @@ export function UserSettings() {
                       htmlFor="lang-id"
                       className="font-normal cursor-pointer"
                     >
-                      Indonesia
+                      {t("settings.lang_id")}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -198,7 +105,7 @@ export function UserSettings() {
                       htmlFor="lang-en"
                       className="font-normal cursor-pointer"
                     >
-                      English
+                      {t("settings.lang_en")}
                     </Label>
                   </div>
                 </RadioGroup>
@@ -208,10 +115,10 @@ export function UserSettings() {
 
               <div className="space-y-3">
                 <Label className="text-sm font-semibold text-foreground">
-                  Set Font
+                  {t("settings.set_font")}
                 </Label>
                 <RadioGroup
-                  value={font}
+                  value={preferences?.font || "sans"}
                   onValueChange={(val) => handlePreferenceChange("font", val)}
                   className="flex space-x-4 mt-2"
                 >
@@ -221,7 +128,7 @@ export function UserSettings() {
                       htmlFor="font-sans"
                       className="font-normal cursor-pointer"
                     >
-                      Sans Serif
+                      {t("settings.font_sans")}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -230,7 +137,7 @@ export function UserSettings() {
                       htmlFor="font-serif"
                       className="font-normal cursor-pointer"
                     >
-                      Serif
+                      {t("settings.font_serif")}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -239,7 +146,7 @@ export function UserSettings() {
                       htmlFor="font-hand"
                       className="font-normal cursor-pointer"
                     >
-                      Handwritten
+                      {t("settings.font_hand")}
                     </Label>
                   </div>
                 </RadioGroup>

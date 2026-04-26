@@ -21,6 +21,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 export function HabitHeader({
   onAddHabit,
   hasHabits,
@@ -32,6 +34,7 @@ export function HabitHeader({
   const { settings, update } = useReminder();
   const { user } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -40,11 +43,11 @@ export function HabitHeader({
 
   return (
     <>
-      {isLoggingOut && <LoadingScreen message="Please wait" />}
+      {isLoggingOut && <LoadingScreen message={t("habitHeader.please_wait")} />}
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
-            <h2 className=" text-2xl leading-none">Atomic Habits</h2>
+            <h2 className=" text-2xl leading-none">{t("habitHeader.app_title")}</h2>
           </div>
           <div className="flex items-center gap-2">
             {hasHabits && (
@@ -107,7 +110,7 @@ export function HabitHeader({
                   render={<Link to="/user-settings" />}
                 >
                   <Settings className="mr-2 h-3.5 w-3.5" />
-                  <span>User Settings</span>
+                  <span>{t("habitHeader.user_settings")}</span>
                 </DropdownMenuItem>
                 <ReminderControl
                   enabled={settings.enabled}
@@ -121,7 +124,7 @@ export function HabitHeader({
                     className="text-xs cursor-pointer my-2"
                   >
                     <Bell className="mr-2 h-3.5 w-3.5" />
-                    <span>Set Reminder</span>
+                    <span>{t("habitHeader.set_reminder")}</span>
                   </DropdownMenuItem>
                 </ReminderControl>
                 <DropdownMenuSeparator />
@@ -131,7 +134,7 @@ export function HabitHeader({
                   className="text-xs cursor-pointer my-2"
                 >
                   <LogOut className="mr-2 h-3.5 w-3.5" />
-                  <span>Logout</span>
+                  <span>{t("habitHeader.logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

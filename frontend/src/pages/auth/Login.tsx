@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
@@ -8,15 +8,27 @@ import { Loader2 } from "lucide-react";
 import { GoogleButton } from "@/components/auth/GoogleButton";
 import { GithubButton } from "@/components/auth/GithubButton";
 import { LoadingScreen } from "@/components/ui/loading-screen";
+import { useTranslation } from "react-i18next";
 
 export function Login() {
   const { session, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Reset font ke default (sans-serif) di halaman login
+  useEffect(() => {
+    document.documentElement.classList.remove(
+      "font-sans",
+      "font-serif",
+      "font-hand",
+    );
+    document.documentElement.classList.add("font-sans");
+  }, []);
 
   if (authLoading) return <div className="min-h-screen bg-background" />;
   if (session) return <Navigate to="/" replace />;
@@ -49,18 +61,17 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {loading && <LoadingScreen message="Please wait" />}
+      {loading && <LoadingScreen message={t("loading.please_wait")} />}
       <div className="flex w-full bg-card text-card-foreground">
         {/* Left Form Section */}
         <div className="flex w-full flex-col justify-center px-8 py-16 md:w-1/2 md:px-16 lg:px-24">
           <div className="mx-auto w-full max-w-lg">
             <div className="mb-10 text-center">
-              <h1 className="mb-2 font-serif text-4xl font-semibold">
-                Hai Achievers!!!
+              <h1 className="mb-2 text-4xl font-semibold">
+                {t("login.title")}
               </h1>
-              <h2 className="text-lg text-muted-foreground">
-                Don't just track tasks. Build the habits that shape your NEW
-                IDENTITY
+              <h2 className="text-sm text-muted-foreground">
+                {t("login.subtitle")}
               </h2>
             </div>
 

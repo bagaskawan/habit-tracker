@@ -1,0 +1,61 @@
+{
+  "addHabit": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "name_label": "Name",
+    "placeholder": "e.g. Read 20 pages",
+    "title": "New habit",
+    "trigger": "New Habit"
+  },
+  "habitHeader": {
+    "app_title": "Atomic Habits",
+    "logout": "Logout",
+    "please_wait": "Please wait",
+    "set_reminder": "Set Reminder",
+    "user_settings": "User Settings"
+  },
+  "habitList": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "delete_confirm": "Are you sure you want to delete",
+    "delete_confirm_suffix": "? This action cannot be undone.",
+    "delete_title": "Delete Habit",
+    "edit_description": "Change the name of your habit.",
+    "edit_title": "Edit Habit",
+    "empty_message": "No daily habits yet. Click 'New habit' to start.",
+    "habit_column": "Habit",
+    "placeholder": "Habit name",
+    "save_changes": "Save Changes"
+  },
+  "habitStats": {
+    "all_daily_this_month": "All daily habits this month",
+    "daily": "daily",
+    "daily_trend": "Daily trend",
+    "month": "Month",
+    "total_completion": "Total completion"
+  },
+  "loading": {
+    "loading_settings": "Loading settings...",
+    "please_wait": "Please wait"
+  },
+  "login": {
+    "subtitle": "Don't just track tasks. Build the habits that shape your NEW IDENTITY",
+    "title": "Hai Achievers!!!"
+  },
+  "reminder": {
+    "enable_notification": "Enable browser notification",
+    "fires_note": "Reminder fires while this tab is open.",
+    "time": "Time",
+    "title": "Daily reminder"
+  },
+  "settings": {
+    "back": "Back",
+    "font_hand": "Handwritten",
+    "font_sans": "Sans Serif",
+    "font_serif": "Serif",
+    "lang_en": "English",
+    "lang_id": "Indonesia",
+    "set_font": "Set Font",
+    "set_language": "Set Language"
+  }
+}

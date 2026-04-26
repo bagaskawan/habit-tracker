@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 export function ReminderControl({
   enabled,
@@ -29,6 +30,7 @@ export function ReminderControl({
 }) {
   const [open, setOpen] = useState(false);
   const time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  const { t } = useTranslation();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -51,14 +53,12 @@ export function ReminderControl({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">
-            Daily reminder
-          </DialogTitle>
+          <DialogTitle className="text-2xl">{t("reminder.title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-5 py-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="reminder-enabled" className="text-sm">
-              Enable browser notification
+              {t("reminder.enable_notification")}
             </Label>
             <Switch
               id="reminder-enabled"
@@ -68,7 +68,7 @@ export function ReminderControl({
           </div>
           <div className="space-y-2">
             <Label htmlFor="reminder-time" className="text-sm">
-              Time
+              {t("reminder.time")}
             </Label>
             <Input
               id="reminder-time"
@@ -80,7 +80,7 @@ export function ReminderControl({
               }}
             />
             <p className="text-xs text-muted-foreground">
-              Reminder fires while this tab is open.
+              {t("reminder.fires_note")}
             </p>
           </div>
         </div>

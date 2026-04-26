@@ -20,6 +20,7 @@ import type { Completion, Habit } from "@/lib/habits/types";
 import { AddHabit } from "./AddHabit";
 import type { HabitFrequency } from "@/lib/habits/types";
 import { useHabits } from "@/hooks/useHabits";
+import { useTranslation } from "react-i18next";
 
 function EmptyState({
   message,
@@ -30,9 +31,7 @@ function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card/50 px-6 py-16 text-center mt-6">
-      <p className="font-serif text-2xl text-muted-foreground mb-4">
-        {message}
-      </p>
+      <p className="text-2xl text-muted-foreground mb-4">{message}</p>
       <AddHabit onAddHabit={onAddHabit} />
     </div>
   );
@@ -60,11 +59,12 @@ export function HabitList({
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [editName, setEditName] = useState("");
+  const { t } = useTranslation();
 
   if (habits.length === 0) {
     return (
       <EmptyState
-        message="No daily habits yet. Click 'New habit' to start."
+        message={t("habitList.empty_message")}
         onAddHabit={onAddHabit}
       />
     );
@@ -76,7 +76,7 @@ export function HabitList({
         <thead>
           <tr className="border-b border-border">
             <th className="sticky left-0 z-10 bg-card px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Habit
+              {t("habitList.habit_column")}
             </th>
             {days.map((d) => {
               const isToday = isSameDay(d, new Date());
@@ -179,18 +179,18 @@ export function HabitList({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Habit</DialogTitle>
+            <DialogTitle>{t("habitList.delete_title")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete{" "}
+              {t("habitList.delete_confirm")}{" "}
               <span className="font-bold text-red-500">
                 {`'${habitToDelete?.name}'`}
               </span>
-              ? This action cannot be undone.
+              {t("habitList.delete_confirm_suffix")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setHabitToDelete(null)}>
-              Cancel
+              {t("habitList.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -201,7 +201,7 @@ export function HabitList({
                 }
               }}
             >
-              Delete
+              {t("habitList.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -214,16 +214,16 @@ export function HabitList({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Habit</DialogTitle>
+            <DialogTitle>{t("habitList.edit_title")}</DialogTitle>
             <DialogDescription>
-              Change the name of your habit.
+              {t("habitList.edit_description")}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              placeholder="Habit name"
+              placeholder={t("habitList.placeholder")}
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter" && editName.trim() && editingHabit) {
@@ -235,7 +235,7 @@ export function HabitList({
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditingHabit(null)}>
-              Cancel
+              {t("habitList.cancel")}
             </Button>
             <Button
               onClick={() => {
@@ -248,7 +248,7 @@ export function HabitList({
                 !editName.trim() || editName.trim() === editingHabit?.name
               }
             >
-              Save Changes
+              {t("habitList.save_changes")}
             </Button>
           </DialogFooter>
         </DialogContent>
