@@ -5,6 +5,7 @@ import type { Habit, Completion, ReminderSettings } from "@/lib/habits/types";
 // const COMPLETIONS_KEY = "ht.completions.v1";
 const REMINDER_KEY = "ht.reminder.v1";
 const THEME_KEY = "ht.theme.v1";
+const API_URL = "http://localhost:3000/api";
 
 const isBrowser = () => typeof window !== "undefined";
 
@@ -24,40 +25,62 @@ function write<T>(key: string, value: T) {
   window.dispatchEvent(new CustomEvent("ht:change", { detail: { key } }));
 }
 
+const getHeaders = async () => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) throw new Error("User not authenticated");
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${session.access_token}`, // Tiket masuk untuk backend!
+  };
+};
+
 export const habitStore = {
-  async list() {
-    const { data, error } = await supabase
-      .from("habits")
-      .select("*")
-      .order("created_at", { ascending: true });
-    if (error) throw error;
-    return data as Habit[];
+  list: async () => {
+    const response = await fetch(`${API_URL}/habits`, {
+      method: "GET",
+      headers: await getHeaders(),
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch habits");
+    const result = await response.json();
+    return result.data;
   },
 
-  async add(habit: Habit) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
+  add: async (habitData: { name: string; frequency: string }) => {
+    const response = await fetch(`${API_URL}/habits`, {
+      method: "POST",
+      headers: await getHeaders(),
+      body: JSON.stringify(habitData),
+    });
 
-    const { error } = await supabase.from("habits").insert([
-      { ...habit, user_id: user.id }
-    ]);
-    if (error) throw error;
-    return;
+    if (!response.ok) throw new Error("Failed to fetch habits");
+    const result = await response.json();
+    return result.data;
   },
 
-  async update(id: string, updates: Partial<Habit>) {
-    const { error } = await supabase
-      .from("habits")
-      .update(updates)
-      .eq("id", id);
-    if (error) throw error;
-    return;
+  update: async (id: string, updates: Partial<Habit>) => {
+    const response = await fetch(`${API_URL}/habits/${id}`, {
+      method: "PATCH",
+      headers: await getHeaders(),
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) throw new Error("Failed to update habits");
+    const result = await response.json();
+    return result.data;
   },
 
-  async delete(id: string) {
-    const { error } = await supabase.from("habits").delete().eq("id", id);
-    if (error) throw error;
-    return;
+  delete: async (id: string) => {
+    const response = await fetch(`${API_URL}/habits/${id}`, {
+      method: "DELETE",
+      headers: await getHeaders(),
+    });
+
+    if (!response.ok) throw new Error("Failed to delete habits");
+    return true;
   },
 };
 
@@ -75,7 +98,9 @@ export const completionStore = {
   },
 
   async add(completion: Completion) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const { error } = await supabase.from("habit_completions").insert([
       {
         habit_id: completion.habit_id,
