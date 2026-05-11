@@ -10,7 +10,7 @@ import type { Completion, Habit } from "./types";
 
 export const dailyKey = (d: Date) => format(d, "yyyy-MM-dd");
 
-export function keyForFrequency(habit: Habit, d: Date) {
+export function keyForFrequency(_habit: Habit, d: Date) {
   return dailyKey(d);
 }
 

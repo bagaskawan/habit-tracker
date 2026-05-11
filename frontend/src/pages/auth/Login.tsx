@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
 import { GoogleButton } from "@/components/auth/GoogleButton";
 import { GithubButton } from "@/components/auth/GithubButton";
 import { LoadingScreen } from "@/components/ui/loading-screen";
@@ -12,13 +9,10 @@ import { useTranslation } from "react-i18next";
 
 export function Login() {
   const { session, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Reset font ke default (sans-serif) di halaman login
   useEffect(() => {
@@ -33,24 +27,7 @@ export function Login() {
   if (authLoading) return <div className="min-h-screen bg-background" />;
   if (session) return <Navigate to="/" replace />;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      navigate("/");
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOAuth = async (provider: "google" | "github") => {
     setLoading(true);

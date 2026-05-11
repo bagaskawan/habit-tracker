@@ -19,7 +19,6 @@ import {
 import type { Completion, Habit } from "@/lib/habits/types";
 import { AddHabit } from "./AddHabit";
 import type { HabitFrequency } from "@/lib/habits/types";
-import { useHabits } from "@/hooks/useHabits";
 import { useTranslation } from "react-i18next";
 
 function EmptyState({
@@ -83,9 +82,8 @@ export function HabitList({
               return (
                 <th
                   key={d.toISOString()}
-                  className={`w-8 py-3 text-center text-[16px] font-normal text-muted-foreground ${
-                    isToday ? "bg-red-50 dark:bg-red-950/30" : ""
-                  }`}
+                  className={`w-8 py-3 text-center text-[16px] font-normal text-muted-foreground ${isToday ? "bg-red-50 dark:bg-red-950/30" : ""
+                    }`}
                 >
                   <span
                     className={
@@ -132,17 +130,15 @@ export function HabitList({
                   return (
                     <td
                       key={d.toISOString()}
-                      className={`px-0.5 py-2 text-center ${
-                        isToday ? "bg-red-50 dark:bg-red-950/30" : ""
-                      }`}
+                      className={`px-0.5 py-2 text-center ${isToday ? "bg-red-50 dark:bg-red-950/30" : ""
+                        }`}
                     >
                       <button
                         onClick={() => onToggle(h, d)}
-                        className={`h-6 w-6 rounded-sm border transition-colors ${
-                          done
-                            ? "border-primary bg-primary"
-                            : "border-border bg-transparent hover:border-foreground/40"
-                        }`}
+                        className={`h-6 w-6 rounded-sm border transition-colors ${done
+                          ? "border-primary bg-primary"
+                          : "border-border bg-transparent hover:border-foreground/40"
+                          }`}
                         aria-label={`Toggle ${format(d, "MMM d")}`}
                       />
                     </td>

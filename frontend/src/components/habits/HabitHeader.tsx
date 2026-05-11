@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Moon, Sun, LogOut, User, Settings, Bell } from "lucide-react";
+import { Moon, Sun, LogOut, Settings, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReminderControl } from "./ReminderControl";
 import { AddHabit } from "./AddHabit";
